@@ -16,8 +16,8 @@ PAGE_CONFIG = {"page_title":"StColab.io","page_icon":":smiley:","layout":"center
 
 def main():
   st.title("Face Completion")	
-  st.subheader("Streamlit From Colab")
-  st.write('loading model')
+  
+  
   with tf.compat.v1.Session() as sess:
       graph = tf.get_default_graph()
       saver = tf.compat.v1.train.import_meta_graph('model/Model.cpkt.meta')
@@ -26,7 +26,7 @@ def main():
       images=graph.get_tensor_by_name('real_images:0')
       z=graph.get_tensor_by_name("z:0")
       g=graph.get_tensor_by_name("Gen:0")
-      st.write('loaded model')
+      
       is_crop=True
       batch_size=64
       image_size=108
@@ -69,6 +69,7 @@ def main():
         st.write(sample.shape)
 
         
+        
         INPUT = []
         x = np.zeros((64,64,3))
         INPUT.append(sample)
@@ -77,19 +78,23 @@ def main():
           INPUT.append(x)
 
         INPUT = np.array(INPUT)
-        st.write('uploaded image')
-        st.image(INPUT[0], clamp=True, channels='RGB')
-        st.write(INPUT.shape)
+        col1,col2,col3 = st.columns(3)
+        with col1:
+          st.image(INPUT[0], clamp=True, channels='RGB',caption='Uploaded photo')
+                    
+          sample_generated=sess.run([g],feed_dict={z:sample_z,images:INPUT})
+          original_part=np.multiply(INPUT,mask_)
+          flag= False
+          flag1 = False
+          
+          with col2:
+              st.image(original_part[0], clamp=True, channels='RGB',caption='Masked photo')
+              
+          generated_part=np.multiply(sample_generated,imask_)
+          total=np.add(original_part,generated_part)
         
-
-      
-        sample_generated=sess.run([g],feed_dict={z:sample_z,images:INPUT})
-        original_part=np.multiply(INPUT,mask_)
-        generated_part=np.multiply(sample_generated,imask_)
-        total=np.add(original_part,generated_part)
-        
-        st.write('generated completed face')
-        st.image(np.array(total[0][0]), clamp=True, channels='RGB' )
+                
+          st.image(np.array(total[0][0]), clamp=True, channels='RGB' ,caption='Completed face')
         
 
 if __name__ == '__main__':
