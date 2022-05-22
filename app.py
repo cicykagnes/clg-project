@@ -54,7 +54,7 @@ def main():
       u=int(64*(1.0-scale))
       imask_[:,l:u,l:u,:]=1.0
       match_file = st.file_uploader(
-                          label="Enter the photo to be matched", type=['jpg'])
+                          label="Enter the photo to be completed", type=['jpg'])
       
       if match_file is not None:
         data = Image.open(match_file)
@@ -65,8 +65,7 @@ def main():
         
         
         sample=get_image(data1, image_size,is_crop)
-        st.write('sample')
-        st.write(sample.shape)
+        
 
         
         
